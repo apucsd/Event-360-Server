@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 const port = process.env.PORT || 5000;
 
-const uri = `mongodb+srv://event-360:JVuDSBzE1LW8roHY@cluster0.pyjfh6u.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pyjfh6u.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -28,6 +28,12 @@ async function run() {
 
     app.get("/services", async (req, res) => {
       return res.send({ message: "dddd" });
+    });
+    app.post("/services", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+
+      res.status(200).send({ message: "Added service successfully", result });
     });
 
     await client.db("admin").command({ ping: 1 });
