@@ -26,6 +26,7 @@ async function run() {
     const serviceCollection = client.db("event-360").collection("services");
     const eventCollection = client.db("event-360").collection("events");
 
+    //services routes
     app.get("/services", async (req, res) => {
       const result = await serviceCollection.find().toArray();
 
@@ -39,8 +40,6 @@ async function run() {
     });
     app.patch("/services/:id", async (req, res) => {
       const service = req.body;
-      console.log(req.params);
-      console.log(service);
       const result = await serviceCollection.findOneAndUpdate(
         {
           _id: new ObjectId(req.params.id),
@@ -55,6 +54,43 @@ async function run() {
 
     app.delete("/services/:id", async (req, res) => {
       const result = await serviceCollection.findOneAndDelete({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send({ result });
+    });
+
+    //events routes
+    app.get("/events", async (req, res) => {
+      const result = await eventCollection.find().toArray();
+
+      return res.send({ result });
+    });
+    app.get("/events/recent", async (req, res) => {
+      const result = await eventCollection.find().sort({ date: -1 }).toArray();
+
+      return res.send({ result });
+    });
+    app.post("/events", async (req, res) => {
+      const event = req.body;
+      const result = await eventCollection.insertOne(event);
+
+      res.status(200).send({ message: "Added event  successfully", result });
+    });
+    app.patch("/events/:id", async (req, res) => {
+      const event = req.body;
+      const result = await eventCollection.findOneAndUpdate(
+        {
+          _id: new ObjectId(req.params.id),
+        },
+        {
+          $set: event,
+        },
+        { new: true }
+      );
+      res.send({ result });
+    });
+    app.delete("/events/:id", async (req, res) => {
+      const result = await eventCollection.findOneAndDelete({
         _id: new ObjectId(req.params.id),
       });
       res.send({ result });
