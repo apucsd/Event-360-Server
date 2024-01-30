@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const app = express();
 require("dotenv").config();
@@ -27,15 +27,38 @@ async function run() {
     const eventCollection = client.db("event-360").collection("events");
 
     app.get("/services", async (req, res) => {
-      return res.send({ message: "dddd" });
+      const result = await serviceCollection.find().toArray();
+
+      return res.send({ result });
     });
     app.post("/services", async (req, res) => {
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
 
-      res.status(200).send({ message: "Added service successfully", result });
+      res.status(200).send({ message: "Added service  successfully", result });
+    });
+    app.patch("/services/:id", async (req, res) => {
+      const service = req.body;
+      console.log(req.params);
+      console.log(service);
+      const result = await serviceCollection.findOneAndUpdate(
+        {
+          _id: new ObjectId(req.params.id),
+        },
+        {
+          $set: service,
+        },
+        { new: true }
+      );
+      res.send({ result });
     });
 
+    app.delete("/services/:id", async (req, res) => {
+      const result = await serviceCollection.findOneAndDelete({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send({ result });
+    });
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"

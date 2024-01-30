@@ -1,7 +1,8 @@
 {
   "name": "assignment-5-server",
   "scripts": {
-    "dev": "node index.js --watch"
+    "dev":"nodemon index.js",
+    "build": "node index.js"
   },
   "version": "1.0.0",
   "main": "index.js",
