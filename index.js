@@ -65,11 +65,6 @@ async function run() {
 
       return res.send({ result });
     });
-    app.get("/events/recent", async (req, res) => {
-      const result = await eventCollection.find().sort({ date: -1 }).toArray();
-
-      return res.send({ result });
-    });
     app.post("/events", async (req, res) => {
       const event = req.body;
       const result = await eventCollection.insertOne(event);
